@@ -1,0 +1,4 @@
+#!/usr/bin/env ruby
+require 'krawler'
+
+Krawler.new(ARGV[0] || 'htt://localhost:3000/').base
