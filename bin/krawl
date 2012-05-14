@@ -1,4 +1,25 @@
 #!/usr/bin/env ruby
 require 'krawler'
+require 'optparse'
 
-Krawler::Base.new(ARGV[0] || 'http://localhost:3000/').base
+options = {}
+optparse = OptionParser.new do |opts|
+  opts.banner = "Usage: krawl [url] [options]"
+
+  opts.separator ""
+  opts.separator "Specific options:"
+
+  opts.on("-ex [regex]", "Exclude matching paths") do |ex|
+    options[:ex] = ex
+  end
+end
+optparse.parse!
+
+if ARGV.empty? || !(ARGV[0] =~ /^http/)
+  puts optparse
+  exit(-1)
+end
+
+Krawler::Base.new(ARGV[0] || 'http://localhost:3000/', {
+  :exclude => options[:ex]
+}).base

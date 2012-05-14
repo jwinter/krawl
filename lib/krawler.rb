@@ -1,17 +1,19 @@
 require 'krawler/version'
 require 'mechanize'
+require 'timeout'
 
 module Krawler
 
   class Base
 
-    def initialize(url)
+    def initialize(url, options)
       @base = url
       @agent = Mechanize.new
       @links_to_crawl = [@base]
       @crawled_links  = []
       @bad_links      = []
       @suspect_links  = []
+      @exclude        = options[:exclude]
     end
   
     def base
@@ -41,14 +43,10 @@ module Krawler
         @bad_links << link
         return
       rescue Timeout::Error => e
-        puts "SLOW PAGE, timeout at #{Time.now - start} seconds"
         @suspect_links << link
         return
-      end
-  
-      elapsed = Time.now - start
-      if elapsed > 7.0
-        puts "SLOW PAGE, #{Time.now - start} seconds"
+      ensure
+        puts "    [#{Time.now - start}s] #{@links_to_crawl.size} links..."
       end
   
       return if !page.respond_to?(:links)
@@ -56,6 +54,7 @@ module Krawler
         new_link = new_link.href
         if (new_link =~ /^#{Regexp.escape(@base)}/) || (new_link =~ /^\//)
           next if @crawled_links.include?(new_link)
+          next if @exclude && new_link =~ /#{@exclude}/
     
           @links_to_crawl << new_link
         end

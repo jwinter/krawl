@@ -4,9 +4,9 @@ require File.expand_path('../lib/krawler/version', __FILE__)
 Gem::Specification.new do |gem|
   gem.authors       = ["Mike Evans"]
   gem.email         = ["mike@urlgonomics.com"]
-  gem.description   = %q{Simple little rake task to crawl a site.}
+  gem.description   = %q{Simple little website crawler.}
   gem.summary       = %q{}
-  gem.homepage      = ""
+  gem.homepage      = 'https://github.com/mje113/krawl'
 
   gem.add_dependency 'mechanize', '~> 2.5.0'
   gem.rubyforge_project = 'krawler'
