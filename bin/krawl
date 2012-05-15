@@ -12,6 +12,10 @@ optparse = OptionParser.new do |opts|
   opts.on("-ex [regex]", "Exclude matching paths") do |ex|
     options[:ex] = ex
   end
+
+  opts.on("-r", "Restrict to sub paths") do |r|
+    options[:r] = true
+  end
 end
 optparse.parse!
 
@@ -21,5 +25,6 @@ if ARGV.empty? || !(ARGV[0] =~ /^http/)
 end
 
 Krawler::Base.new(ARGV[0] || 'http://localhost:3000/', {
-  :exclude => options[:ex]
+  :exclude  => options[:ex],
+  :restrict => options[:r]
 }).base
