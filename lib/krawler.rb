@@ -18,8 +18,8 @@ module Krawler
       @suspect_links  = []
       @exclude        = options[:exclude]
       @restrict       = options[:restrict]
-      @randomize      = true
-      @max_threads    = 4
+      @randomize      = options[:randomize]
+      @threads        = options[:threads]   || 1
       @mutex          = Mutex.new
       @agent          = Mechanize.new
     end
@@ -39,9 +39,9 @@ module Krawler
       @suspect_links.each { |link| puts link }
     end
 
-    def initialize_threads
+    def initialize_threads(agent)
       threads = []
-      @max_threads.times do |i|
+      @threads.times do |i|
         threads << Thread.new(i) do
 
           agent = @agent.dup

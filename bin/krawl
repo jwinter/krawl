@@ -4,18 +4,31 @@ require 'optparse'
 
 options = {}
 optparse = OptionParser.new do |opts|
-  opts.banner = "Usage: krawl [url] [options]"
+  opts.banner = 'Usage: krawl [base url] [options]'
 
-  opts.separator ""
-  opts.separator "Specific options:"
+  opts.separator ''
+  opts.separator 'Specific options:'
 
-  opts.on("-ex [regex]", "Exclude matching paths") do |ex|
-    options[:ex] = ex
+  opts.on('-e', '--exclude regex', 'Exclude matching paths') do |e|
+    options[:e] = e
   end
 
-  opts.on("-r", "Restrict to sub paths") do |r|
-    options[:r] = true
+  opts.on('-s', '--sub-restrict', 'Restrict to sub paths of base url', 'Default: false') do |s|
+    options[:s] = true
   end
+
+  opts.on('-c', '--concurrent count', 'Crawl with count number of concurrent connections', 'Default: 4') do |c|
+    options[:c] = c.to_i
+  end
+
+  opts.on('-r', '--randomize', 'Randomize crawl path', 'Default: true') do |r|
+    options[:r] = r
+  end
+
+  opts.separator ''
+
+  opts.on('-h', '--help', 'Show this help message.') { puts opts; exit }
+
 end
 optparse.parse!
 
@@ -25,6 +38,8 @@ if ARGV.empty? || !(ARGV[0] =~ /^http/)
 end
 
 Krawler::Base.new(ARGV[0] || 'http://localhost:3000/', {
-  :exclude  => options[:ex],
-  :restrict => options[:r]
+  :exclude   => options[:e],
+  :restrict  => options[:s],
+  :threads   => options[:c],
+  :randomize => options[:r]
 }).base
