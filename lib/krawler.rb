@@ -77,17 +77,18 @@ module Krawler
         @suspect_links << link
         return
       ensure
-        @mutex.synchronize {
+        @mutex.synchronize do
           puts link
           puts "    [#{Time.now - start}s] #{@links_to_crawl.size} links..."
-        }
+        end
       end
   
       @mutex.synchronize do
         return if !page.respond_to?(:links)
         page.links.each do |new_link|
           next if new_link.href.nil?
-  
+          next if new_link.rel.include? 'nofollow'
+          
           # quick scrub known issues
           new_link = new_link.href.gsub(/ /, '%20')
   
