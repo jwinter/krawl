@@ -3,29 +3,32 @@ require 'mechanize'
 require 'timeout'
 require 'uri'
 require 'thread'
+require 'pry'
 
 module Krawler
 
   class Base
 
     def initialize(url, options)
-      @url            = URI(url)
-      @host           = "#{@url.scheme}://#{@url.host}"
-      @base_path      = @url.path
-      @links_to_crawl = [@url.to_s]
-      @crawled_links  = []
-      @bad_links      = []
-      @suspect_links  = []
-      @exclude        = options[:exclude]
-      @restrict       = options[:restrict]
-      @randomize      = options[:randomize]
-      @threads        = options[:threads]   || 1
-      @mutex          = Mutex.new
-      @agent          = Mechanize.new
+      @url              = URI(url)
+      @host             = "#{@url.scheme}://#{@url.host}"
+      @base_path        = @url.path
+      @links_to_crawl   = [@url.to_s]
+      @crawled_links    = []
+      @bad_links        = []
+      @suspect_links    = []
+      @exclude          = options[:exclude]
+      @restrict         = options[:restrict]
+      @randomize        = options[:randomize]
+      @threads          = options[:threads]   || 1
+      @mutex            = Mutex.new
+      @agent            = Mechanize.new
+      @agent.user_agent = 'Krawler'
+      @headers          = { 'Accept-Encoding' => 'gzip, deflate' }
     end
   
     def base
-      puts "Crawling..."
+      puts "Krawling..."
 
       crawl_page(@url, @agent)
       initialize_threads(@agent)
@@ -68,7 +71,7 @@ module Krawler
 
       begin
         start = Time.now
-        page = agent.get(link)
+        page = agent.get(link, [], nil, @headers)
       rescue Mechanize::ResponseCodeError => e
         @mutex.synchronize { puts e }
         @bad_links << link
@@ -78,8 +81,11 @@ module Krawler
         return
       ensure
         @mutex.synchronize do
+          real    = Time.now - start
+          runtime = page.header['x-runtime'].to_f
+          network = (real - runtime).round(10)
           puts link
-          puts "    [#{Time.now - start}s] #{@links_to_crawl.size} links..."
+          puts "    [#{real}s real] [#{runtime}s runtime] [#{network}s network] #{@links_to_crawl.size} links..."
         end
       end
   
