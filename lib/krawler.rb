@@ -81,9 +81,14 @@ module Krawler
         return
       ensure
         @mutex.synchronize do
-          real    = Time.now - start
-          runtime = page.header['x-runtime'].to_f
-          network = (real - runtime).round(10)
+          real = Time.now - start
+          if page
+            runtime = page.header['x-runtime'].to_f
+            network = (real - runtime).round(10)
+          else
+            runtime = '0'
+            network = '0'
+          end
           puts link
           puts "    [#{real}s real] [#{runtime}s runtime] [#{network}s network] #{@links_to_crawl.size} links..."
         end
