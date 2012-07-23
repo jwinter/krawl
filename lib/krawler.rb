@@ -23,7 +23,6 @@ module Krawler
       @mutex            = Mutex.new
       @agent            = Mechanize.new
       @agent.user_agent = 'Krawler'
-      @agent.agent.http.verify_mode = OpenSSL::SSL::VERIFY_NONE
       @agent.ssl_version = 'SSLv3'
       @headers          = { 'Accept-Encoding' => 'gzip, deflate' }
     end
