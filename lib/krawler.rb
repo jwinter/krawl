@@ -67,9 +67,7 @@ module Krawler
     end
   
     def crawl_page(link, agent)
-link = link.to_s.gsub(/per_page=36/, '')
-link = link =~ /(.*)(page=\d)/ ? "#{$1}per_page=36&#{$2}" : "#{link}?per_page=36&page=1"
-
+      
       @crawled_links << link
 
       begin
