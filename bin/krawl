@@ -25,6 +25,10 @@ optparse = OptionParser.new do |opts|
     options[:r] = r
   end
 
+  opts.on('-n', '--no-verify', "Don't verify SSL domains") do |e|
+    options[:n] = true
+  end
+
   opts.separator ''
 
   opts.on('-h', '--help', 'Show this help message.') { puts opts; exit }
@@ -41,5 +45,6 @@ Krawler::Base.new(ARGV[0] || 'http://localhost:3000/', {
   :exclude   => options[:e],
   :restrict  => options[:s],
   :threads   => options[:c],
+  :no_verify => options[:n],
   :randomize => options[:r]
 }).base

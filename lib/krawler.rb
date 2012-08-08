@@ -24,6 +24,7 @@ module Krawler
       @agent            = Mechanize.new
       @agent.user_agent = 'Krawler'
       @agent.ssl_version = 'SSLv3'
+      @agent.verify_mode = OpenSSL::SSL::VERIFY_NONE if options[:no_verify]
       @headers          = { 'Accept-Encoding' => 'gzip, deflate' }
     end
   
