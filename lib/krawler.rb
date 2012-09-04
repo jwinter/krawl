@@ -25,6 +25,7 @@ module Krawler
       @agent.user_agent = 'Krawler'
       @agent.ssl_version = 'SSLv3'
       @headers          = { 'Accept-Encoding' => 'gzip, deflate' }
+      @headers['Cache-Control'] = 'no-cache' if options[:no_cache]
     end
   
     def base
