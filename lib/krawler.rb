@@ -3,7 +3,6 @@ require 'mechanize'
 require 'timeout'
 require 'uri'
 require 'thread'
-require 'pry'
 module Krawler
 
   class Base
@@ -20,6 +19,9 @@ module Krawler
       @restrict         = options[:restrict]
       @randomize        = options[:randomize]
       @threads          = options[:threads]   || 1
+      @username         = options[:username]
+      @password         = options[:password]
+      @login_url       = options[:login_url]
       @mutex            = Mutex.new
       @agent            = Mechanize.new
       @agent.user_agent = 'Krawler'
@@ -29,7 +31,13 @@ module Krawler
     end
   
     def base
+      return -1 unless validate_authentication_options
+
       puts "Krawling..."
+
+      if use_authentication?
+        authenticate(@agent, @username, @password, @login_url)
+      end
 
       crawl_page(@url, @agent)
       initialize_threads(@agent)
@@ -41,6 +49,33 @@ module Krawler
     
       puts "Suspect Links:"
       @suspect_links.each { |link| puts link }
+    end
+
+    def authenticate(agent, user, password, login_url)
+      agent.get(login_url) do |page|
+        login_form = page.form
+
+        login_form['user[email]'] = user
+        login_form['user[password]'] = password
+
+        agent.submit(login_form, login_form.buttons.first)
+      end
+    end
+
+    def use_authentication?
+      !@username.nil? || !@password.nil? || !@login_url.nil?
+    end
+
+    def validate_authentication_options
+      any_nil = [@login_url, @username, @password].any? {|v| v.nil?}
+      all_nil = [@login_url, @username, @password].all? {|v| v.nil?}
+      if (any_nil && !all_nil)
+        puts "You must either provide all authentication options" +
+          " (username, password, and loginurl) or provide none."
+        return false
+      else
+        return true
+      end
     end
 
     def initialize_threads(agent)

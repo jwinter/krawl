@@ -8,7 +8,7 @@ Gem::Specification.new do |gem|
   gem.summary       = %q{}
   gem.homepage      = 'https://github.com/mje113/krawl'
 
-  gem.add_dependency 'mechanize', '~> 2.5.0'
+  gem.add_dependency 'mechanize', '~> 2.5.1'
   gem.rubyforge_project = 'krawler'
 
   gem.files         = `git ls-files`.split($\)
