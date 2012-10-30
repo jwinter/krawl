@@ -29,6 +29,18 @@ optparse = OptionParser.new do |opts|
     options[:nc] = true
   end
 
+  opts.on('-l[login_url]', '--login_url[=login_url]', 'Login URL') do |login_url|
+    options[:l] = login_url
+  end
+
+  opts.on('-u[username]', '--username[=username]', 'Username') do |username|
+    options[:u] = username
+  end
+
+  opts.on('-p[password]', '--password[=password]', 'Password') do |password|
+    options[:p] = password
+  end
+
   opts.separator ''
 
   opts.on('-h', '--help', 'Show this help message.') { puts opts; exit }
@@ -46,5 +58,8 @@ Krawler::Base.new(ARGV[0] || 'http://localhost:3000/', {
   :restrict  => options[:s],
   :threads   => options[:c],
   :randomize => options[:r],
-  :no_cache  => options[:nc]
+  :no_cache  => options[:nc],
+  :username  => options[:u],
+  :password  => options[:p],
+  :login_url => options[:l]
 }).base
