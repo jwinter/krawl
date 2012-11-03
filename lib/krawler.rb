@@ -3,6 +3,7 @@ require 'mechanize'
 require 'timeout'
 require 'uri'
 require 'thread'
+
 module Krawler
 
   class Base
@@ -16,12 +17,13 @@ module Krawler
       @bad_links        = []
       @suspect_links    = []
       @exclude          = options[:exclude]
+      @include          = options[:include]
       @restrict         = options[:restrict]
       @randomize        = options[:randomize]
       @threads          = options[:threads]   || 1
       @username         = options[:username]
       @password         = options[:password]
-      @login_url       = options[:login_url]
+      @login_url        = options[:login_url]
       @mutex            = Mutex.new
       @agent            = Mechanize.new
       @agent.user_agent = 'Krawler'
@@ -149,10 +151,19 @@ module Krawler
   
           if (new_link =~ /^#{Regexp.escape(@host)}/) || (new_link =~ /^\//) # don't crawl external domains
   
-            next if @crawled_links.include?(new_link) || @links_to_crawl.include?(new_link)       # don't crawl what we've alread crawled
+            next if @crawled_links.include?(new_link) || @links_to_crawl.include?(new_link) # don't crawl what we've alread crawled
             next if @exclude  && new_link =~ /#{@exclude}/   # don't crawl excluded matched paths
-            next if @restrict && (new_url.path !~ /^#{Regexp.escape(@base_path)}/) # don't crawl outside of our restricted base path
-            
+
+            if @restrict  # don't crawl outside of our restricted base path
+              if @include && new_url.path =~ /#{@include}/ # unless we match our inclusion
+                # ignore
+              else
+                if new_url.path !~ /^#{Regexp.escape(@base_path)}/
+                  next
+                end
+              end
+            end
+
             @links_to_crawl << new_link
           end
         end

@@ -13,6 +13,10 @@ optparse = OptionParser.new do |opts|
     options[:e] = e
   end
 
+  opts.on('-i', '--include regex', 'Include matching paths regardless of sub path restriction') do |i|
+    options[:i] = i
+  end
+
   opts.on('-s', '--sub-restrict', 'Restrict to sub paths of base url', 'Default: false') do |s|
     options[:s] = true
   end
@@ -55,6 +59,7 @@ end
 
 Krawler::Base.new(ARGV[0] || 'http://localhost:3000/', {
   :exclude   => options[:e],
+  :include   => options[:i],
   :restrict  => options[:s],
   :threads   => options[:c],
   :randomize => options[:r],
