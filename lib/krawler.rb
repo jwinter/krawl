@@ -71,7 +71,7 @@ module Krawler
                 @links_to_crawl.pop
               end
             }
-
+            puts "THREAD: #{i}"
             crawl_page(link, agent)
           end
         end
