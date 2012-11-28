@@ -4,6 +4,7 @@ require 'mechanize'
 require 'timeout'
 require 'uri'
 require 'thread'
+require 'pry'
 
 module Krawler
 
@@ -71,7 +72,6 @@ module Krawler
                 @links_to_crawl.pop
               end
             }
-            puts "THREAD: #{i}"
             crawl_page(link, agent)
           end
         end
@@ -111,6 +111,9 @@ module Krawler
   
       @mutex.synchronize do
         return if !page.respond_to?(:links)
+
+        recache_invalid_results(page)
+
         page.links.each do |new_link|
           next if new_link.href.nil?
           next if new_link.rel.include? 'nofollow'
@@ -143,6 +146,29 @@ module Krawler
             @links_to_crawl << new_link
           end
         end
+      end
+    end
+
+    protected
+
+    def params_to_hash(params)
+      params = CGI.unescape(params)
+      Hash[ params.split('&').map { |p| p.split('=') } ]
+    end
+
+    def hash_to_params(hash)
+      hash.map { |k, v| "#{k}=#{v}" }.sort * '&'
+    end
+
+    def recache_invalid_results(page)
+      page.search('tr td i.icon-remove').each do |invalid|
+        a = invalid.parent.parent.css('a').first
+        next if a.nil?
+        uri = URI(a['href'])
+        query = params_to_hash(uri.query || '')
+        query['cache'] = 'false'
+        uri.query = hash_to_params(query)
+        @links_to_crawl << uri.to_s
       end
     end
   end
