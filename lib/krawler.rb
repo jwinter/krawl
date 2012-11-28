@@ -4,7 +4,6 @@ require 'mechanize'
 require 'timeout'
 require 'uri'
 require 'thread'
-require 'pry'
 
 module Krawler
 
