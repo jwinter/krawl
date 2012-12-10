@@ -22,11 +22,11 @@ optparse = OptionParser.new do |opts|
   end
 
   opts.on('-d', '--ignore-domain', 'Ignore domain restrictions', 'Default: false') do |d|
-    options[:s] = true
+    options[:d] = true
   end
 
   opts.on('-c', '--concurrent count', 'Crawl with count number of concurrent connections', 'Default: 4') do |c|
-    options[:d] = true
+    options[:c] = c.to_i
   end
 
   opts.on('-r', '--randomize', 'Randomize crawl path', 'Default: true') do |r|

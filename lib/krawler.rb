@@ -127,7 +127,7 @@ module Krawler
           rescue ArgumentError # junk link
             next
           end
-  
+
           if @domain || (new_link =~ /^#{Regexp.escape(@host)}/) || (new_link =~ /^\//) # don't crawl external domains
   
             next if @crawled_links.include?(new_link) || @links_to_crawl.include?(new_link) # don't crawl what we've alread crawled
