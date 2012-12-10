@@ -22,6 +22,7 @@ module Krawler
       @exclude          = options[:exclude]
       @include          = options[:include]
       @restrict         = options[:restrict]
+      @domain           = options[:domain]
       @randomize        = options[:randomize]
       @threads          = options[:threads]   || 1
       @username         = options[:username]
@@ -127,7 +128,7 @@ module Krawler
             next
           end
   
-          if (new_link =~ /^#{Regexp.escape(@host)}/) || (new_link =~ /^\//) # don't crawl external domains
+          if @domain || (new_link =~ /^#{Regexp.escape(@host)}/) || (new_link =~ /^\//) # don't crawl external domains
   
             next if @crawled_links.include?(new_link) || @links_to_crawl.include?(new_link) # don't crawl what we've alread crawled
             next if @exclude  && new_link =~ /#{@exclude}/   # don't crawl excluded matched paths

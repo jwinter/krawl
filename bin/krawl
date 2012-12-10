@@ -21,8 +21,12 @@ optparse = OptionParser.new do |opts|
     options[:s] = true
   end
 
+  opts.on('-d', '--ignore-domain', 'Ignore domain restrictions', 'Default: false') do |d|
+    options[:s] = true
+  end
+
   opts.on('-c', '--concurrent count', 'Crawl with count number of concurrent connections', 'Default: 4') do |c|
-    options[:c] = c.to_i
+    options[:d] = true
   end
 
   opts.on('-r', '--randomize', 'Randomize crawl path', 'Default: true') do |r|
@@ -66,5 +70,6 @@ Krawler::Base.new(ARGV[0] || 'http://localhost:3000/', {
   :no_cache  => options[:nc],
   :username  => options[:u],
   :password  => options[:p],
-  :login_url => options[:l]
+  :login_url => options[:l],
+  :domain    => options[:d]
 }).base
