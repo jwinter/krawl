@@ -171,7 +171,9 @@ module Krawler
         uri.query = hash_to_params(query)
         if @restrict  # don't crawl outside of our restricted base path
           if @include && uri.path =~ /#{@include}/ # unless we match our inclusion
-            @links_to_crawl << uri.to_s
+            if !@crawled_links.include?(uri.path) && !@links_to_crawl.include?(uri.path) # don't crawl what we've alread crawled
+              @links_to_crawl << uri.to_s
+            end
           end
         end
       end
