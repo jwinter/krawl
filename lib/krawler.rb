@@ -112,6 +112,7 @@ module Krawler
       @mutex.synchronize do
         return if !page.respond_to?(:links)
 
+        # This doesn't follow any of the rules below...
         recache_invalid_results(page)
 
         page.links.each do |new_link|
@@ -168,7 +169,13 @@ module Krawler
         query = params_to_hash(uri.query || '')
         query['cache'] = 'false'
         uri.query = hash_to_params(query)
-        @links_to_crawl << uri.to_s
+        if @restrict  # don't crawl outside of our restricted base path
+          if @include && uri.path =~ /#{@include}/ # unless we match our inclusion
+            if !@crawled_links.include?(uri.path) && !@links_to_crawl.include?(uri.path) # don't crawl what we've alread crawled
+              @links_to_crawl << uri.to_s
+            end
+          end
+        end
       end
     end
   end
