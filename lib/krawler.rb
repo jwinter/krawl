@@ -112,8 +112,7 @@ module Krawler
       @mutex.synchronize do
         return if !page.respond_to?(:links)
 
-        # This doesn't follow any of the rules below...
-        recache_invalid_results(page)
+        #recache_invalid_results(page)
 
         page.links.each do |new_link|
           next if new_link.href.nil?
