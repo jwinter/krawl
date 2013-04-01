@@ -80,6 +80,15 @@ module Krawler
       threads.each { |t| t.join }
     end
   
+    def valid_xml?(xml_string)
+      begin
+        Nokogiri::XML(xml_string) { |config| config.options = Nokogiri::XML::ParseOptions::STRICT }
+      rescue Nokogiri::XML::SyntaxError => e
+        false
+      end
+
+    end
+
     def crawl_page(link, agent)
       
       @crawled_links << link
@@ -105,7 +114,14 @@ module Krawler
             network = '0'
           end
           puts link
-          puts "    [#{real}s real] [#{runtime}s runtime] [#{network}s network] #{@links_to_crawl.size} links..."
+          if link.to_s.end_with?('xml')
+            if doc = valid_xml?(page.body)
+              doc # need something here to test for if it's a shell
+            else
+              puts "#{link} was badly formed XML"
+            end
+          end
+          puts "   #{page.response["status"]} #{'TOO LONG' if real > 10} [#{real}s real] [#{runtime}s runtime] [#{network}s network] #{@links_to_crawl.size} links..."
         end
       end
   
