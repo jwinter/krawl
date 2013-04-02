@@ -58,6 +58,8 @@ module Krawler
     end
 
     def initialize_threads(agent)
+      @links_to_crawl = @links_to_crawl + ['/featured/Movies', '/featured/Kids','/featured/Networks','/featured/TV Series']
+
       threads = []
       @threads.times do |i|
         threads << Thread.new(i) do
