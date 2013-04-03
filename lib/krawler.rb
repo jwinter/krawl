@@ -4,6 +4,7 @@ require 'mechanize'
 require 'timeout'
 require 'uri'
 require 'thread'
+#require 'pry'
 
 module Krawler
 
@@ -88,13 +89,16 @@ module Krawler
       rescue Nokogiri::XML::SyntaxError => e
         false
       end
+    end
 
+    def number_episodes_in_xml(xml_doc)
+      xml_doc.xpath('//xbox:episode').length
     end
 
     def crawl_page(link, agent)
       
       @crawled_links << link
-
+      num_episodes = 'not_series_xml'
       begin
         start = Time.now
         page = agent.get(link, [], nil, @headers)
@@ -115,15 +119,18 @@ module Krawler
             runtime = '0'
             network = '0'
           end
-          puts link
           if link.to_s.end_with?('xml')
             if doc = valid_xml?(page.body)
-              doc # need something here to test for if it's a shell
+              if link.to_s.start_with?('/series')
+                num_episodes = number_episodes_in_xml(doc)
+                bad_xml_structure = true if num_episodes < 1
+              end
             else
               puts "#{link} was badly formed XML"
             end
           end
-          puts "   #{page.response["status"]} #{'TOO LONG' if real > 10} [#{real}s real] [#{runtime}s runtime] [#{network}s network] #{@links_to_crawl.size} links..."
+          puts link.to_s
+          puts "   #{page.response["status"]} #{'TOO LONG' if real > 10} #{'BADLY_STRUCTURED_XML' if bad_xml_structure} [#{real}s real] [#{runtime}s runtime] [#{network}s network] [#{num_episodes}] #{@links_to_crawl.size} links..."
         end
       end
   
