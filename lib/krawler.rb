@@ -104,6 +104,7 @@ module Krawler
         page = agent.get(link, [], nil, @headers)
       rescue Mechanize::ResponseCodeError => e
         @mutex.synchronize { puts e }
+        error = e
         @bad_links << link
         return
       rescue Timeout::Error => e
@@ -130,7 +131,10 @@ module Krawler
             end
           end
           puts link.to_s
-          puts "   #{page.response["status"]} #{'TOO LONG' if real > 10} #{'BADLY_STRUCTURED_XML' if bad_xml_structure} [#{real}s real] [#{runtime}s runtime] [#{network}s network] [#{num_episodes}] #{@links_to_crawl.size} links..."
+          if page.nil?
+            puts error
+          else
+            puts "   #{page.response["status"]} #{'TOO LONG' if real > 10} #{'BADLY_STRUCTURED_XML' if bad_xml_structure} [#{real}s real] [#{runtime}s runtime] [#{network}s network] [#{num_episodes} episodes] #{@links_to_crawl.size} links..."
         end
       end
   
